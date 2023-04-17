@@ -1,0 +1,11 @@
+LIMIT 10000.0
+NAME Painting 
+DESCRIPTION A fine drawing 
+PRICE 1000.0
+NAME Lady Gaga's signature 
+DESCRIPTION A signature from a super star  
+PRICE 2000.0
+NAME Lady Gaga's signature 
+DESCRIPTION A signature from a super star  
+PRICE 2000.0
+END

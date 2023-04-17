@@ -6,10 +6,10 @@ import java.util.Observable;
 
 import com.google.gson.Gson;
 
-class Server extends Observable {
+class ServerS extends Observable {
 
   public static void main(String[] args) {
-    new Server().runServer();
+    new ServerS().runServer();
   }
 
   private void runServer() {
@@ -28,7 +28,7 @@ class Server extends Observable {
       Socket clientSocket = serverSock.accept();
       System.out.println("Connecting to... " + clientSocket);
 
-      ClientHandler handler = new ClientHandler(this, clientSocket);
+      ClientHandlerS handler = new ClientHandlerS(this, clientSocket);
       this.addObserver(handler);
 
       Thread t = new Thread(handler);
@@ -39,7 +39,7 @@ class Server extends Observable {
   protected void processRequest(String input) {
     String output = "Error";
     Gson gson = new Gson();
-    Message message = gson.fromJson(input, Message.class);
+    MessageS message = gson.fromJson(input, MessageS.class);
     try {
       String temp = "";
       switch (message.type) {
@@ -64,5 +64,7 @@ class Server extends Observable {
       e.printStackTrace();
     }
   }
+  
+  
 
 }

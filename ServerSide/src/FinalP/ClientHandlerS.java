@@ -8,14 +8,14 @@ import java.net.Socket;
 import java.util.Observer;
 import java.util.Observable;
 
-class ClientHandler implements Runnable, Observer {
+class ClientHandlerS implements Runnable, Observer {
 
-  private Server server;
+  private ServerS server;
   private Socket clientSocket;
   private BufferedReader fromClient;
   private PrintWriter toClient;
 
-  protected ClientHandler(Server server, Socket clientSocket) {
+  protected ClientHandlerS(ServerS server, Socket clientSocket) {
     this.server = server;
     this.clientSocket = clientSocket;
     try {

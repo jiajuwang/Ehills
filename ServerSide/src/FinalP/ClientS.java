@@ -8,7 +8,7 @@ import java.net.Socket;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-class Client {
+class ClientS {
 
   private static String host = "127.0.0.1";
   private BufferedReader fromServer;
@@ -17,7 +17,7 @@ class Client {
 
   public static void main(String[] args) {
     try {
-      new Client().setUpNetworking();
+      new ClientS().setUpNetworking();
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -51,7 +51,7 @@ class Client {
         while (true) {
           String input = consoleInput.nextLine();
           String[] variables = input.split(",");
-          Message request = new Message(variables[0], variables[1], Integer.valueOf(variables[2]));
+          MessageS request = new MessageS(variables[0], variables[1], Integer.valueOf(variables[2]));
           GsonBuilder builder = new GsonBuilder();
           Gson gson = builder.create();
           sendToServer(gson.toJson(request));
