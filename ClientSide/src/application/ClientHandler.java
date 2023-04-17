@@ -32,6 +32,7 @@ class ClientHandler implements Runnable, Observer {
     toClient.flush();
   }
 
+
   @Override
   public void run() {
     String input;
