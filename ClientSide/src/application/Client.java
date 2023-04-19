@@ -33,11 +33,12 @@ import javafx.scene.layout.VBox;
 class Client {
 
 	  private static String host = "localhost";
+	  private static Set<Client> clients = new HashSet<Client>();
 	  private BufferedReader fromServer;
 	  private BufferedWriter toServer;
-	  private Scanner consoleInput = new Scanner(System.in);
+	  //private Scanner consoleInput = new Scanner(System.in);
 	  private ObjectInputStream objectInputStream;
-	  private LoginController l;
+	  //private LoginController l;
 	  private Socket socket;
 
 	  public static void main(String[] args) {
@@ -54,7 +55,19 @@ class Client {
 	    System.out.println("Connecting to... " + socket);
 	    //fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 	    toServer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-	    l = new LoginController();
+	    //l = new LoginController();
+	  }
+	  
+	  public Client() {
+		  try {
+		  this.socket = new Socket(host, 4242);
+		   System.out.println("Connecting to... " + socket);
+		   toServer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+		   clients.add(this);
+		  }
+		  catch(Exception e) {
+			  System.out.println("can't build");
+		  }
 	  }
 	  
 	  
