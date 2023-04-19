@@ -23,6 +23,7 @@ class ClientHandler implements Runnable, Observer {
 	  private BufferedWriter toClient;
 	  private ObjectOutputStream objectOutputputStream;
 	  private FileInformation f= new FileInformation();
+	  
 
 
 	  protected ClientHandler(Server server, Socket clientSocket) {
@@ -56,7 +57,7 @@ class ClientHandler implements Runnable, Observer {
 	    
 	    try {
 	      f.read();
-	      //objectOutputputStream.writeObject(f);
+	      objectOutputputStream.writeObject(f);
 	      while ((input = fromClient.readLine()) != null) {	        
 	        //server.processRequest(input);
 	    	  process(input);
