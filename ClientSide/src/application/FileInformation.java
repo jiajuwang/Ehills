@@ -1,24 +1,18 @@
-package FinalP;
+package application;
 
 import java.io.*;
 import java.util.*;
 
 public class FileInformation {
 	private Map<Item,Double> items;
-	private double highLimit;
-	private Map<String, Double> names;
+	private double highLimit;;
 	public FileInformation() {
 		items = new HashMap<Item,Double>();
 		highLimit = 0.0;
-		names = new HashMap<String, Double>();
 	}
 	
 	public Map<Item,Double> getItem(){
 		return this.items;
-	}
-	
-	public Map<String,Double> getName(){
-		return this.names;
 	}
 	
 	public double getLimit(){
@@ -51,7 +45,6 @@ public class FileInformation {
 					double ptemp = Double.parseDouble(command[1]);
 					//items.add(new Item(ntemp,stemp,ptemp));
 					items.put(new Item(ntemp,stemp), ptemp);
-					names.put(ntemp, ptemp);
 					command = sc.nextLine().split(" ");
 					length = command.length;
 					i = 0;

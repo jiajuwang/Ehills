@@ -8,16 +8,16 @@ import java.net.Socket;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-class ClientS {
+class Client {
 
-  private static String host = "127.0.0.1";
+  private static String host = "localhost";
   private BufferedReader fromServer;
   private PrintWriter toServer;
   private Scanner consoleInput = new Scanner(System.in);
 
   public static void main(String[] args) {
     try {
-      new ClientS().setUpNetworking();
+      new Client().setUpNetworking();
     } catch (Exception e) {
       e.printStackTrace();
     }

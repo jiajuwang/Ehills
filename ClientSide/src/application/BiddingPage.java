@@ -14,13 +14,10 @@ import javafx.stage.Stage;
 
 
 public class BiddingPage extends Application{
-	
-	ArrayList<Item> s;
-	public BiddingPage(ArrayList<Item> s) {
-		this.s = s;
-	}
 
+	
 	public void start(Stage Controller) {
+		
 	GridPane grid = new GridPane();
 	ScrollPane scroll = new ScrollPane();
 	scroll.setContent(grid);
@@ -34,18 +31,16 @@ public class BiddingPage extends Application{
 	grid.setLayoutY(0);
 	grid.setHgap(100);
 	grid.setVgap(5);
-	int j = 0;
-	for(int i = 0;i<s.size();i++) {
-		grid.add(new Text("Name: "+s.get(i).getName()), 0, j);
-		grid.add(new Text("CurrentPrice: "+s.get(i).getPrice()), 1, j);
-		j++;
-		grid.add(new Text("Description:\n "+s.get(i).getDescription()), 0, j);
-		j++;
-		grid.add(new TextField("Enter Price: "),0,j);
-		grid.add(new Button("BUY!"), 1, j);
-		j++;
+	//BiddingController c = new BiddingController();
+	//c.addGUI(grid);
+	Controller.show();
 	}
+	
+	public static void main(String[] args) {
+		launch(args);
+
 	}
+	
 	
 }
 

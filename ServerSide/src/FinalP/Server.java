@@ -3,13 +3,21 @@ package FinalP;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Observable;
-
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import com.google.gson.Gson;
 
-class ServerS extends Observable {
+class Server extends Observable {
 
   public static void main(String[] args) {
-    new ServerS().runServer();
+    new Server().runServer();
   }
 
   private void runServer() {
@@ -28,9 +36,9 @@ class ServerS extends Observable {
       Socket clientSocket = serverSock.accept();
       System.out.println("Connecting to... " + clientSocket);
 
-      ClientHandlerS handler = new ClientHandlerS(this, clientSocket);
+      ClientHandler handler = new ClientHandler(this, clientSocket);
       this.addObserver(handler);
-
+      //handler.sendToClient("s");
       Thread t = new Thread(handler);
       t.start();
     }
