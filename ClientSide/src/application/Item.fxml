@@ -8,9 +8,9 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<BorderPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.SampleController">
+<BorderPane prefHeight="100.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.ItemController">
    <center>
-      <GridPane BorderPane.alignment="CENTER">
+      <GridPane prefHeight="100.0" prefWidth="400.0" BorderPane.alignment="CENTER">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -24,14 +24,14 @@
         </rowConstraints>
          <children>
             <Label text="Name:" />
-            <Label id="Item" text="Price:" GridPane.columnIndex="2" />
+            <Label fx:id="Item" text="Price:" GridPane.columnIndex="2" />
             <Label text="Description:" GridPane.rowIndex="1" />
-            <TextField id="EnterPrice" promptText="Enter Price:" GridPane.rowIndex="2" />
-            <Button id="BuyButton" mnemonicParsing="false" text="BUY!" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <TextField id="ItemName" GridPane.columnIndex="1" />
-            <TextField id="ItemPrice" GridPane.columnIndex="3" />
-            <TextField id="ItemDescription" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <TextField id="Message" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <TextField fx:id="EnterPrice" promptText="Enter Price:" GridPane.rowIndex="2" />
+            <Button fx:id="BuyButton" mnemonicParsing="false" text="BUY!" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <TextField fx:id="ItemName" GridPane.columnIndex="1" />
+            <TextField fx:id="ItemPrice" GridPane.columnIndex="3" />
+            <TextField fx:id="ItemDescription" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <TextField fx:id="Message" GridPane.columnIndex="2" GridPane.rowIndex="2" />
          </children>
       </GridPane>
    </center>

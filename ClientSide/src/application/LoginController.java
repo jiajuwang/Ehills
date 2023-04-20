@@ -4,16 +4,20 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -24,59 +28,112 @@ public class LoginController implements Initializable{
 	private Button LoginButton;
 	
 	@FXML 
-	private TextField password;
+	private TextField PasswordField;
 	
 	@FXML
-	private TextField UserName;
+	private TextField UsernameField;
 	
 	@FXML
-	private Text ErrorMessage;
+	private Label ErrorShow;
 	
 	@FXML
 	private AnchorPane main;
 	
 	private Client c;
 	
+	private BiddingController b;
+	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		// TODO Auto-generated method stub
-		c = new Client();
-		
+		//c = new Client();
+		b = new BiddingController();
 		LoginButton.setOnAction(new EventHandler<ActionEvent>() { // what to do when butt is pressed
 			@Override
 			public void handle(ActionEvent event) {
 				try {
-					String userName = UserName.getText();
-					String passWord = password.getText();
-					c.sendToServer(userName+" "+passWord);
+					String userName = UsernameField.getText();
+					String passWord = PasswordField.getText();
+					ErrorShow.setText("Please Enter again.");
+					//UserNameField.clear();
+					//c.sendToServer(userName+" "+passWord);
+					//Text t = new Text("Please Enter again.");
+					//main.getChildren().add(t);
+					
+					//Stage primaryStage = new Stage();
+					//BorderPane root = (BorderPane)FXMLLoader.load(getClass().getResource("BiddingPage.fxml"));
+					//Scene scene = new Scene(root,600,400);
+					//scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+					//primaryStage.setScene(scene);
+					//primaryStage.show();
+					showBiddingPage();
+					System.out.println("received");
+					
 				}
 				catch(Exception e) {
-					
+					e.printStackTrace();
 				}
 			}
 		});
 	}
 	
-		public boolean receiveMessage(String s) {
+		public void receiveMessage(String s) {
 			if(s.equals("username valid")) {
-				showBiddingPage();
-				return true;
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						b.showPage();
+					}
+				});
+				
+				
+				
 			}
 			else {
-				ErrorMessage.setText("Please Enter again.");
-				UserName.clear();
-				password.clear();
-				return false;
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						ErrorShow.setText("Please Enter again.");
+						UsernameField.clear();
+						PasswordField.clear();
+					}
+				});
+				
+				
 			}
 		}
 		
+	
+		
 		public void showBiddingPage() {
+			
+		
+			try {
+			Stage primaryStage = new Stage();
+			//Pane root = FXMLLoader.load(getClass().getResource("Item.fxml"));	
+			VBox v = new VBox();
+			Pane tested = new Pane();
+			Pane newLoadedPane = FXMLLoader.load(getClass().getResource("Item.fxml"));
+			v.getChildren().add(newLoadedPane);
+			v.getChildren().add(tested);
+			Scene scene = new Scene(v,600,400);			
+			primaryStage.setScene(scene);
+			primaryStage.show();
+			}
+			catch(Exception e) {
+				System.out.println("S");
+			}
 			
 		}
 		
 		
-	}
+		public void setBiddingController(FileInformation f) {
+			//biddingController = new BiddingController(f);
+		}
+		
+		
 	
+}
 
 
 
