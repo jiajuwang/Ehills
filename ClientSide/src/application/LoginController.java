@@ -2,6 +2,7 @@ package application;
 
 import java.net.Socket;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
@@ -10,6 +11,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.ScrollPane;
@@ -39,22 +41,40 @@ public class LoginController implements Initializable{
 	@FXML
 	private AnchorPane main;
 	
-	private Client c;
+	//private Client c;
+	private boolean messageSent = false;
 	
-	private BiddingController b;
+	private String CustomerName;
 	
+	
+	public String getCustomerName() {
+		return CustomerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		CustomerName = customerName;
+	}
+
+	public boolean isMessageSent() {
+		return messageSent;
+	}
+
+	public void setMessageSent(boolean messageSent) {
+		this.messageSent = messageSent;
+	}
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		// TODO Auto-generated method stub
 		//c = new Client();
-		b = new BiddingController();
+		
 		LoginButton.setOnAction(new EventHandler<ActionEvent>() { // what to do when butt is pressed
 			@Override
 			public void handle(ActionEvent event) {
 				try {
 					String userName = UsernameField.getText();
 					String passWord = PasswordField.getText();
-					ErrorShow.setText("Please Enter again.");
+					//ErrorShow.setText("Please Enter again.");
 					//UserNameField.clear();
 					//c.sendToServer(userName+" "+passWord);
 					//Text t = new Text("Please Enter again.");
@@ -66,7 +86,8 @@ public class LoginController implements Initializable{
 					//scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 					//primaryStage.setScene(scene);
 					//primaryStage.show();
-					showBiddingPage();
+					messageSent = true;
+					//showBiddingPage();
 					System.out.println("received");
 					
 				}
@@ -77,12 +98,12 @@ public class LoginController implements Initializable{
 		});
 	}
 	
-		public void receiveMessage(String s) {
+		/*public void nextStage(String s, FileInformation f) {
 			if(s.equals("username valid")) {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						b.showPage();
+						showBiddingPage(f);
 					}
 				});
 				
@@ -101,15 +122,27 @@ public class LoginController implements Initializable{
 				
 				
 			}
+		}*/
+		
+		  //login fail
+		  //login success
+		  //buy 0 success 
+		public void process(String[] msg, FileInformation f, List<ItemController> items) {
+			if(msg[1].equals("fail")) {
+				ErrorShow.setText("Please Enter again.");
+				UsernameField.clear();
+				PasswordField.clear();
+			}
+			else {
+				showBiddingPage(f,items);
+			}
 		}
 		
-	
-		
-		public void showBiddingPage() {
+		public void showBiddingPage(FileInformation f,List<ItemController> items) {
 			
 		
 			try {
-			Stage primaryStage = new Stage();
+			/*Stage primaryStage = new Stage();
 			//Pane root = FXMLLoader.load(getClass().getResource("Item.fxml"));	
 			VBox v = new VBox();
 			Pane tested = new Pane();
@@ -118,18 +151,67 @@ public class LoginController implements Initializable{
 			v.getChildren().add(tested);
 			Scene scene = new Scene(v,600,400);			
 			primaryStage.setScene(scene);
-			primaryStage.show();
+			primaryStage.show();*/
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("BiddingPage.fxml"));	
+			Parent root = loader.load();
+			BiddingController b = loader.getController();
+			b.showPage(f,items);
 			}
 			catch(Exception e) {
-				System.out.println("S");
+				System.out.println("s");
+				e.printStackTrace();
 			}
 			
 		}
 		
-		
-		public void setBiddingController(FileInformation f) {
-			//biddingController = new BiddingController(f);
+		public Button getLoginButton() {
+			return LoginButton;
 		}
+
+		public void setLoginButton(Button loginButton) {
+			LoginButton = loginButton;
+		}
+
+		public TextField getPasswordField() {
+			return PasswordField;
+		}
+
+		public void setPasswordField(TextField passwordField) {
+			PasswordField = passwordField;
+		}
+
+		public TextField getUsernameField() {
+			return UsernameField;
+		}
+
+		public void setUsernameField(TextField usernameField) {
+			UsernameField = usernameField;
+		}
+
+		public Label getErrorShow() {
+			return ErrorShow;
+		}
+
+		public void setErrorShow(Label errorShow) {
+			ErrorShow = errorShow;
+		}
+
+		public AnchorPane getMain() {
+			return main;
+		}
+
+		public void setMain(AnchorPane main) {
+			this.main = main;
+		}
+
+		public String writeMessage() {
+			String userN = getUsernameField().getText(); 
+			String pass = getPasswordField().getText();
+			String toSent = "login "+userN + " "+pass;
+			CustomerName = userN;
+			return toSent;
+		}
+		
 		
 		
 	

@@ -18,6 +18,7 @@ import java.net.UnknownHostException;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -40,6 +41,10 @@ class Client {
 	  private ObjectInputStream objectInputStream;
 	  //private LoginController l;
 	  private Socket socket;
+	  private LoginController login;
+	  private List<ItemController> items;
+	  private FileInformation toPass;
+	  private String CustomerName;
 
 	  public static void main(String[] args) {
 	    try {
@@ -53,36 +58,47 @@ class Client {
 	    //@SuppressWarnings("resource")
 	    this.socket = new Socket(host, 4242);
 	    System.out.println("Connecting to... " + socket);
-	    //fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+	    FXMLLoader loader = new FXMLLoader(getClass().getResource("LoginPage.fxml"));
+	    login = loader.getController();
 	    toServer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-	    //l = new LoginController();
+	    
+	    read.start();
+	    write.start();
 	  }
 	  
-	  public Client() {
-		  try {
-		  this.socket = new Socket(host, 4242);
-		   System.out.println("Connecting to... " + socket);
-		   toServer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-		   clients.add(this);
-		  }
-		  catch(Exception e) {
-			  System.out.println("can't build");
-		  }
-	  }
-	  
-	  
-	  public void read(VBox vbox){
-	    new Thread(new Runnable() {
+	
+	
+	  Thread read =  new Thread(new Runnable() {
 	      @Override
 	      public void run() {
 	    	  try {
 	    		    		
 	          while(socket.isConnected()) {
 	        	  Object input = objectInputStream.readObject();
-	        	  if(input instanceof FileInformation) {
-	        		  FileInformation itemInfo = (FileInformation)input;
+	        	  if(input == null) {
+	        		  continue;
 	        	  }
-	        	  if ((input instanceof String)&&(login((String)input, vbox))){
+	        	  if(input instanceof FileInformation) {
+	        		  //pass in biddingitems
+	        		  toPass = (FileInformation)input;
+	        	  }
+	        	  else {
+	        		  while((input!=null)&&(input instanceof String)) {
+	        			  //login fail
+	        			  //login success
+	        			  //buy 0 success 
+	        			  String[] temp = ((String)input).split(" ");
+	        			  if(temp[0].equals("login")) {
+	        				  login.process(temp,toPass,items);
+	        			  }
+	        			  else if(temp[0].equals("buy")) {
+	        				  Integer index = Integer.parseInt(temp[1]);
+	        				  items.get(index).process(temp);
+	        			  }
+	        			  input = objectInputStream.readObject();
+	        		  }
+	        	  }
+	        	  /*if ((input instanceof String)&&(login((String)input, vbox))){
 	        		  l.showBidding();
 	        		  input = objectInputStream.readObject();
 	        		  l.setBiddingController(null);
@@ -96,68 +112,56 @@ class Client {
 	        			  }
 	        		  }
 	        	  }
-	          }
-	        } catch (Exception e) {
+	          }*/
+	        }} catch (Exception e) {
 	          e.printStackTrace();
 	        }
 	      }
 	    });
-	    }
+	  	
+	  
+	  Thread write = new Thread(new Runnable() {
+		  @Override
+		  public void run() {
+			  try {
+				  while(socket.isConnected()) {
+				  if(login.isMessageSent()) {
+					  //if login button pushed, then write
+					 
+					 toServer.write(login.writeMessage()+" "+CustomerName);
+					 login.setMessageSent(false);
+					 toServer.newLine();
+					 toServer.flush();
+				  }
+				  else {
+					  //traverse all the items to see if their button are pressed
+					  for(ItemController i: items) {
+						  if(i!=null) {
+							  if(i.isMessageSent()) {
+								  //String user = login.getUsernameField().getText(); 
+								  //String pass = login.getPasswordField().getText();
+								  toServer.write(i.writeMessage()+" "+CustomerName);
+								  login.setMessageSent(false);
+								  toServer.newLine();
+								  toServer.flush();
+							  }
+						  }
+					  }
+					  
+				  }
+				  } 
+				  }
+			  catch(Exception e) {
+				  e.printStackTrace();
+			  }
+			  }
+		  }
+	  );
+	   
 	  
 
-	   /* public void write() {
-	    new Thread(new Runnable() {
-	      @Override
-	      public void run() {
-	        while (true) {
-	          String input = consoleInput.nextLine();
-	          String[] variables = input.split(",");
-	          Message request = new Message(variables[0], variables[1], Integer.valueOf(variables[2]));
-	          GsonBuilder builder = new GsonBuilder();
-	          Gson gson = builder.create();
-	          sendToServer(gson.toJson(request));
-	          
-	        }
-	      }
-	    }).start();
-
-	    
-	  }*/
+	   
 	  
-	  public void clientStart() {
-		  try {
-		      new Client().setUpNetworking();
-		    } catch (Exception e) {
-		      e.printStackTrace();
-		    }
-	  }
-	  /*protected void processRequest(String input) {
-	    return;
-	  }*/
-
-	  public void sendToServer(String string) {
-	    System.out.println("Sending to server: " + string);
-	    try {
-			toServer.write(string);
-			toServer.newLine();
-			toServer.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	    
-	  }
-
-	  public boolean login(String s, VBox v) {		  
-		  return l.receiveMessage(s, v);
-	}
 	  
-	  public void getItems(Object o) {
-		  //if(fromServer.read)
-		  try {
-				l.setBiddingController((FileInformation)o); 
-			} 
-		 catch (Exception e) {
-			e.printStackTrace();
-		}
-	  }
+	  
 }
