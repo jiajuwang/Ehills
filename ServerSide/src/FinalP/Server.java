@@ -37,6 +37,7 @@ class Server extends Observable {
       System.out.println("Connecting to... " + clientSocket);
 
       ClientHandler handler = new ClientHandler(this, clientSocket);
+      System.out.println("build handler");
       this.addObserver(handler);
       //handler.sendToClient("s");
       Thread t = new Thread(handler);

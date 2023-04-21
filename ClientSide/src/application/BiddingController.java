@@ -7,6 +7,10 @@ import java.awt.Toolkit;
 import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
+
+import FinalP.FileInformation;
+import FinalP.Item;
+
 import java.util.*;
 
 import javafx.event.ActionEvent;
@@ -73,7 +77,8 @@ public class BiddingController implements Initializable{
 			int j = 0;
 			VBox v = new VBox();
 			for(Map.Entry<Item,Double> entry : temp.entrySet()) {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("Item.fxml"));	
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("Item.fxml"));
+			loader.load();
 			ItemController it = loader.getController();
 			it.getIndex().setText("j");
 			it.getItemName().setText(entry.getKey().getName());

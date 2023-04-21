@@ -5,6 +5,9 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import FinalP.FileInformation;
+import FinalP.Item;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -141,7 +144,7 @@ public class LoginController implements Initializable{
 		public void showBiddingPage(FileInformation f,List<ItemController> items) {
 			
 		
-			try {
+			
 			/*Stage primaryStage = new Stage();
 			//Pane root = FXMLLoader.load(getClass().getResource("Item.fxml"));	
 			VBox v = new VBox();
@@ -152,6 +155,8 @@ public class LoginController implements Initializable{
 			Scene scene = new Scene(v,600,400);			
 			primaryStage.setScene(scene);
 			primaryStage.show();*/
+			Platform.runLater(()->{
+				try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("BiddingPage.fxml"));	
 			Parent root = loader.load();
 			BiddingController b = loader.getController();
@@ -161,7 +166,7 @@ public class LoginController implements Initializable{
 				System.out.println("s");
 				e.printStackTrace();
 			}
-			
+			});
 		}
 		
 		public Button getLoginButton() {

@@ -10,6 +10,9 @@ import java.io.InputStream;*/
 import java.io.*;
 import java.net.Socket;
 import java.util.Observer;
+
+
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
@@ -20,7 +23,7 @@ class ClientHandler implements Runnable, Observer {
 	  private Socket clientSocket;
 	  private BufferedReader fromClient;
 	  private BufferedWriter toClient;
-	  private ObjectOutputStream objectOutputputStream;
+	  private ObjectOutputStream objectOutputStream;
 	  private FileInformation f= new FileInformation();
 	  private static Map<String,String> customers = new HashMap<String,String>();
 	 
@@ -29,17 +32,20 @@ class ClientHandler implements Runnable, Observer {
 	  protected ClientHandler(Server server, Socket clientSocket) {
 	    this.server = server;
 	    this.clientSocket = clientSocket;
-	    
-	    f.read();
+	    System.out.println("w");
+	    //f.read();
+	    System.out.println("w");
 	    try {
 	      fromClient = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
-	      toClient = new BufferedWriter(new OutputStreamWriter(this.clientSocket.getOutputStream()));
+	      objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+	      //toClient = new BufferedWriter(new OutputStreamWriter(this.clientSocket.getOutputStream()));
+	      System.out.println("w");
 	    } catch (IOException e) {
 	      e.printStackTrace();
 	    }
 	  }
 
-	  protected void sendToClient(String string) {
+	 /* protected void sendToClient(String string) {
 	    try {
 	    	toClient.write(string);
 	    	toClient.newLine();
@@ -48,7 +54,7 @@ class ClientHandler implements Runnable, Observer {
 	    catch(Exception e) {
 	    	
 	    }
-	  }
+	  }*/
 	  
 	  
 
@@ -58,10 +64,20 @@ class ClientHandler implements Runnable, Observer {
 	    String input;
 	    
 	    try {
-	      input = fromClient.readLine();
-	      objectOutputputStream.writeObject(f);
+	    	System.out.println("s");
+	      //input = fromClient.readLine();
+	      //System.out.println(input);
+	    	
+	    	//System.out.println(f.getLimit());
+	   
+	      //f.read();
+	      objectOutputStream.writeObject(f.getItem());
+	      objectOutputStream.flush();
+	      System.out.println(f.getLimit());
+	      System.out.println("clientrun");
 	      while ((input = fromClient.readLine()) != null) {	        
 	        //server.processRequest(input);
+	    	  System.out.println(input);
 	    	  process(input);
 	      }
 	    } catch (IOException e) {
@@ -71,36 +87,25 @@ class ClientHandler implements Runnable, Observer {
 
 	  public void process(String s) {
 		  String arr[] = s.split(" ");
-		  //String name = arr[0];
-		  //double price = Double.parseDouble(arr[1]);
-		 /* if(f.getName().containsKey(name)) {
-			  if(price>f.getName().get(name)) {
-				  sendToClient("Congradulations");
-				  synchronized(f) {
-					  f.getName().remove(name);
-				  }
-			  }
-			  else {
-				  sendToClient("low");
-			  }
-		  }
-		  else {
-			  sendToClient("sold");
-		  }
-	  }*/
 		  String toSend;
+		  try {
 		  if(arr[0].equals("login")) {
 			  if(customers.containsKey(arr[1])) {
 				  if(customers.get(arr[1]).equals(arr[2])) {
 					  toSend = "login success";
-					  sendToClient(toSend);
+					  objectOutputStream.writeObject(toSend);
+					  objectOutputStream.flush();
 				  }
 				  else {
 					  toSend = "login fail";
-					  sendToClient(toSend);
+					  objectOutputStream.writeObject(toSend);
+					  objectOutputStream.flush();
 				  }
 			  }
 			  else {
+				  toSend = "login success";
+				  objectOutputStream.writeObject(toSend);
+				  objectOutputStream.flush();
 				  customers.put(arr[1], arr[2]);
 			  }
 		  }
@@ -110,19 +115,25 @@ class ClientHandler implements Runnable, Observer {
 			  if(f.getName().containsKey(itemName)) {
 				  if(f.getName().get(itemName)<=price) {
 					  toSend = "buy success "+ arr[1]+arr[2]+arr[3]+arr[4];
-					  sendToClient(toSend);
+					  objectOutputStream.writeObject(toSend);
+					  objectOutputStream.flush();
 				  }
 				  else {
 					  toSend = "buy fail low "+ arr[1]+arr[2]+arr[3]+arr[4];
-					  sendToClient(toSend);
+					  objectOutputStream.writeObject(toSend);
+					  objectOutputStream.flush();
 				  }
 			  }
+		  }
+		  }
+		  catch(Exception e) {
+			  e.printStackTrace();
 		  }
 		  		
 	
 	  }
 	  @Override
 	  public void update(Observable o, Object arg) {
-	    this.sendToClient((String) arg);
+	    //this.sendToClient((String) arg);
 	  }
 	}
