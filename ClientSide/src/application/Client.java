@@ -51,19 +51,20 @@ class Client {
 	  //private LoginController l;
 	  private Socket socket;
 	  private LoginController login;
-	  private List<ItemController> items;
+	  private List<ItemController> items = new ArrayList<ItemController>();
 	  private FileInformation toPass;
 	  private String CustomerName;
+	  private static Object lock = new Object();
 
-	  public static void main(String[] args) {
+	 /* public static void main(String[] args) {
 	    try {
 	      new Client().setUpNetworking();
 	    } catch (Exception e) {
 	      e.printStackTrace();
 	    }
-	  }
+	  }*/
 
-	  private void setUpNetworking() throws Exception {
+	  void setUpNetworking() throws Exception {
 	    //@SuppressWarnings("resource")
 	    this.socket = new Socket(host, 4242);
 	    System.out.println("Connecting to... " + socket);
@@ -71,7 +72,7 @@ class Client {
 	    //login = loader.getController();
 	    toServer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 	    objectInputStream = new ObjectInputStream(socket.getInputStream());
-	    /*
+	    
 	    Platform.runLater(() -> {
 	    	try {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("LoginPage.fxml"));
@@ -87,7 +88,7 @@ class Client {
 	    		e.printStackTrace();
 	    	}
 	    });
-        */
+        
 	    
             	
 	    
@@ -123,6 +124,7 @@ class Client {
 	        		  //pass in biddingitems
 	        		  //System.out.println("found");
 	        		  toPass = (FileInformation)input;
+	        		  System.out.println("file passed");
 	        	  }
 	        	  else {
 	        		  
@@ -137,7 +139,7 @@ class Client {
 	        				  login.process(temp,toPass,items);
 	        			  }
 	        			  else if(temp[0].equals("buy")) {
-	        				  Integer index = Integer.parseInt(temp[1]);
+	        				  Integer index = Integer.parseInt(temp[3]);
 	        				  items.get(index).process(temp);
 	        			  }
 	        			  }
@@ -160,11 +162,14 @@ class Client {
 		  public void run() {
 			  System.out.println("write");
 			 try {
-				  if(socket.isConnected()) {
+				  while(socket.isConnected()) {
 				  
 					  //if button pressed, send
 						//traverse all the items to see if their button are pressed
-				 /* if(login.isMessageSent()) {
+					  while((login==null)){
+						  
+					  }
+				  if(login.isMessageSent()) {
 					 
 					 System.out.println("username sent");
 					 toServer.write(login.writeMessage()+" "+CustomerName);
@@ -174,20 +179,23 @@ class Client {
 					 
 				  }
 				  else {
-					  
-					  for(ItemController i: items) {
-						  if(i!=null) {
-							  if(i.isMessageSent()) {
-								  toServer.write(i.writeMessage()+" "+CustomerName);
-								  login.setMessageSent(false);
+					  synchronized(lock) {
+					  for(int i =0;i<items.size();i++) {
+						  if(items.get(i)!=null) {
+							  if(items.get(i).isMessageSent()) {
+								  toServer.write(items.get(i).writeMessage()+" "+CustomerName);
+								  items.get(i).setMessageSent(false);
 								  toServer.newLine();
 								  toServer.flush();
 							  }
 						  }
-					  }*/
+					  }
+				  }
+				  }
+				  }
 					  
 					  
-					  //tested
+					 /* 
 					  toServer.write("login user pass");
 						 toServer.newLine();
 						 
@@ -195,11 +203,11 @@ class Client {
 						 toServer.write("login user 1234");
 						 toServer.newLine();
 						 
-						 toServer.flush();
+						 toServer.flush();*/
 				  }
 				  
 		  
-			 }
+			 
 					  catch(Exception e) {
 						  e.printStackTrace();
 						  

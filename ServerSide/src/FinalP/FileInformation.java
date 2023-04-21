@@ -21,7 +21,7 @@ public class FileInformation implements Serializable{
 					String ntemp = "";
 					while(i<(length)-1) {
 						i++;
-						ntemp = ntemp + command[i] + " ";
+						ntemp = ntemp + command[i];
 					}
 					command = sc.nextLine().split(" ");
 					length = command.length;
@@ -79,7 +79,7 @@ public class FileInformation implements Serializable{
 					String ntemp = "";
 					while(i<(length)-1) {
 						i++;
-						ntemp = ntemp + command[i] + " ";
+						ntemp = ntemp + command[i];
 					}
 					command = sc.nextLine().split(" ");
 					length = command.length;

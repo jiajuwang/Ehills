@@ -91,8 +91,7 @@ public class LoginController implements Initializable{
 					//primaryStage.show();
 					messageSent = true;
 					//showBiddingPage();
-					System.out.println("received");
-					
+										
 				}
 				catch(Exception e) {
 					e.printStackTrace();

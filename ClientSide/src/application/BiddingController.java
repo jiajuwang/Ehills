@@ -72,6 +72,7 @@ public class BiddingController implements Initializable{
 			Scene scene = new Scene(v,600,400);			
 			primaryStage.setScene(scene);
 			primaryStage.show();*/
+			System.out.println("show scene");
 			Map<Item,Double> temp= f.getItem();
 			//Pane root = FXMLLoader.load(getClass().getResource("Item.fxml"));
 			int j = 0;
@@ -80,7 +81,7 @@ public class BiddingController implements Initializable{
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("Item.fxml"));
 			loader.load();
 			ItemController it = loader.getController();
-			it.getIndex().setText("j");
+			it.getIndex().setText(String.valueOf(j));
 			it.getItemName().setText(entry.getKey().getName());
 			it.getItemDescription().setText(entry.getKey().getDescription());
 			it.getItemPrice().setText(String.valueOf(entry.getValue()));

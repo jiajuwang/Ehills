@@ -14,11 +14,12 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			Parent root = FXMLLoader.load(getClass().getResource("LoginPage.fxml"));
+			/*Parent root = FXMLLoader.load(getClass().getResource("LoginPage.fxml"));
 			Scene scene = new Scene(root,600,400);
 			//scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
-			primaryStage.show();
+			primaryStage.show();*/
+			new Client().setUpNetworking();
 			
 		} catch(Exception e) {
 			e.printStackTrace();

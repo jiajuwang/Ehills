@@ -71,7 +71,7 @@ class ClientHandler implements Runnable, Observer {
 	    	//System.out.println(f.getLimit());
 	   
 	      //f.read();
-	      objectOutputStream.writeObject(f.getItem());
+	      objectOutputStream.writeObject(f);
 	      objectOutputStream.flush();
 	      System.out.println(f.getLimit());
 	      System.out.println("clientrun");
@@ -112,14 +112,16 @@ class ClientHandler implements Runnable, Observer {
 		  else if(arr[0].equals("buy")){
 			  Double price = Double.parseDouble(arr[3]);
 			  String itemName = arr[2];
+			  System.out.println(itemName);
 			  if(f.getName().containsKey(itemName)) {
+				  System.out.println("ready to send");
 				  if(f.getName().get(itemName)<=price) {
-					  toSend = "buy success "+ arr[1]+arr[2]+arr[3]+arr[4];
+					  toSend = "buy success "+ arr[1]+" "+arr[2]+" "+arr[3]+" "+arr[4];
 					  objectOutputStream.writeObject(toSend);
 					  objectOutputStream.flush();
 				  }
 				  else {
-					  toSend = "buy fail low "+ arr[1]+arr[2]+arr[3]+arr[4];
+					  toSend = "buy fail low "+ arr[1]+" "+arr[2]+" "+arr[3]+" "+arr[4];
 					  objectOutputStream.writeObject(toSend);
 					  objectOutputStream.flush();
 				  }
