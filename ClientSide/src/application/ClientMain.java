@@ -10,15 +10,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.fxml.FXMLLoader;
 
 
-public class Main extends Application {
+public class ClientMain extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			/*Parent root = FXMLLoader.load(getClass().getResource("LoginPage.fxml"));
-			Scene scene = new Scene(root,600,400);
-			//scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-			primaryStage.setScene(scene);
-			primaryStage.show();*/
+			//show GUI main page
 			new Client().setUpNetworking();
 			
 		} catch(Exception e) {
@@ -36,3 +32,4 @@ public class Main extends Application {
 		
 	}
 }
+

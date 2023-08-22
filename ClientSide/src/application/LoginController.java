@@ -1,12 +1,14 @@
 package application;
 
-import java.net.Socket;
 import java.net.URL;
+import java.sql.Connection;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import FinalP.FileInformation;
-import FinalP.Item;
+
+
+//import FinalP.FileInformation;
+//import FinalP.Item;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -33,7 +35,7 @@ public class LoginController implements Initializable{
 	private Button LoginButton;
 	
 	@FXML 
-	private TextField PasswordField;
+	private PasswordField PasswordField;
 	
 	@FXML
 	private TextField UsernameField;
@@ -44,6 +46,8 @@ public class LoginController implements Initializable{
 	@FXML
 	private AnchorPane main;
 	
+	@FXML
+	private Button quit;
 	//private Client c;
 	private boolean messageSent = false;
 	
@@ -75,22 +79,12 @@ public class LoginController implements Initializable{
 			@Override
 			public void handle(ActionEvent event) {
 				try {
+					//if button pressed, notify client to write
 					String userName = UsernameField.getText();
 					String passWord = PasswordField.getText();
-					//ErrorShow.setText("Please Enter again.");
-					//UserNameField.clear();
-					//c.sendToServer(userName+" "+passWord);
-					//Text t = new Text("Please Enter again.");
-					//main.getChildren().add(t);
 					
-					//Stage primaryStage = new Stage();
-					//BorderPane root = (BorderPane)FXMLLoader.load(getClass().getResource("BiddingPage.fxml"));
-					//Scene scene = new Scene(root,600,400);
-					//scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-					//primaryStage.setScene(scene);
-					//primaryStage.show();
 					messageSent = true;
-					//showBiddingPage();
+					
 										
 				}
 				catch(Exception e) {
@@ -98,68 +92,47 @@ public class LoginController implements Initializable{
 				}
 			}
 		});
+		
+		quit.setOnAction(new EventHandler<ActionEvent>() { // what to do when butt is pressed
+			@Override
+			public void handle(ActionEvent event) {
+				Platform.exit();
+				System.exit(0);
+			}
+		});
 	}
 	
-		/*public void nextStage(String s, FileInformation f) {
-			if(s.equals("username valid")) {
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						showBiddingPage(f);
-					}
-				});
-				
-				
-				
-			}
-			else {
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						ErrorShow.setText("Please Enter again.");
-						UsernameField.clear();
-						PasswordField.clear();
-					}
-				});
-				
-				
-			}
-		}*/
+
 		
 		  //login fail
 		  //login success
 		  //buy 0 success 
-		public void process(String[] msg, FileInformation f, List<ItemController> items) {
+		public void process(Stage stage,String[] msg, Connection f, List<ItemController> items) {
+			//if login success, show bidding page
+			Platform.runLater(()->{
 			if(msg[1].equals("fail")) {
 				ErrorShow.setText("Please Enter again.");
 				UsernameField.clear();
 				PasswordField.clear();
+				
 			}
 			else {
+				CustomerName = msg[2];
+				stage.close();
 				showBiddingPage(f,items);
 			}
+			});
+		
 		}
 		
-		public void showBiddingPage(FileInformation f,List<ItemController> items) {
+		public void showBiddingPage(Connection f,List<ItemController> items) {
 			
-		
-			
-			/*Stage primaryStage = new Stage();
-			//Pane root = FXMLLoader.load(getClass().getResource("Item.fxml"));	
-			VBox v = new VBox();
-			Pane tested = new Pane();
-			Pane newLoadedPane = FXMLLoader.load(getClass().getResource("Item.fxml"));
-			v.getChildren().add(newLoadedPane);
-			v.getChildren().add(tested);
-			Scene scene = new Scene(v,600,400);			
-			primaryStage.setScene(scene);
-			primaryStage.show();*/
 			Platform.runLater(()->{
 				try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("BiddingPage.fxml"));	
 			Parent root = loader.load();
 			BiddingController b = loader.getController();
-			b.showPage(f,items);
+			b.showPage(f,items,CustomerName);
 			}
 			catch(Exception e) {
 				System.out.println("s");
@@ -180,7 +153,7 @@ public class LoginController implements Initializable{
 			return PasswordField;
 		}
 
-		public void setPasswordField(TextField passwordField) {
+		public void setPasswordField(PasswordField passwordField) {
 			PasswordField = passwordField;
 		}
 
@@ -212,7 +185,7 @@ public class LoginController implements Initializable{
 			String userN = getUsernameField().getText(); 
 			String pass = getPasswordField().getText();
 			String toSent = "login "+userN + " "+pass;
-			CustomerName = userN;
+			//CustomerName = userN;
 			return toSent;
 		}
 		
@@ -226,76 +199,6 @@ public class LoginController implements Initializable{
 
 
 
-/*public class LoginController {
-	public Client c;
-	public String username;
-	public BiddingController biddingController;
-	GridPane grid = new GridPane();
-	Stage biddingStage = new Stage();
-	
-	
-	public LoginController() {
-		c = new Client();
 
-		//biddingController = new BiddingController();
-		grid = new GridPane();
-		ScrollPane scroll = new ScrollPane();
-		scroll.setContent(grid);
-		scroll.setPannable(true);
-		Scene scene = new Scene(scroll, 600, 600);
-		biddingStage.setX(0);
-		biddingStage.setY(0);
-		biddingStage.setTitle("Bidding Page");
-		biddingStage.setScene(scene);
-		grid.setLayoutX(0);
-		grid.setLayoutY(0);
-		grid.setHgap(100);
-		grid.setVgap(5);
-		Button update = new Button("update");
-		grid.add(update, 1, 0);
-		update.setOnAction(new EventHandler<ActionEvent>() { // what to do when butt is pressed
-			@Override
-			public void handle(ActionEvent event) {
-				try {
-					//biddingController.addGUI(grid, c);
-				}
-				catch(Exception e) {
-					
-				}
-			}
-		});
-	}
-	
-	public void setBiddingController(FileInformation f) {
-		biddingController = new BiddingController(f);
-	}
-	
-	public void sendMessage(String s) {
-		c.sendToServer(s);
-	}
-	
-	public boolean receiveMessage(String s, VBox v) {
-		if(s.equals("username valid")) {
-			return true;
-		}
-		else {
-			Text t = new Text("Invalid");
-			v.getChildren().add(t);
-			return false;
-		}
-	}
-	
-	public void showBidding() {		
-		//BiddingController biddingController = new BiddingController();
-		biddingController.addGUI(grid,c);
-		biddingStage.show();
-	}
-	
-	
-	public void showNotification(String info,String item) {
-		biddingController.receiveMessage(info, item, grid);
-	}
-	
-}*/
 
 

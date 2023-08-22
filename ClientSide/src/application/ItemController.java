@@ -4,6 +4,7 @@ import javafx.scene.control.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -70,6 +71,24 @@ public class ItemController implements Initializable{
 	@FXML
 	private Label Index;
 	
+	@FXML
+	private Label BiddingPrice;
+	
+	@FXML
+	private Label Duration;
+	
+	public Label getBiddingPrice() {
+		return BiddingPrice;
+	}
+	public void setBiddingPrice(Label biddingPrice) {
+		BiddingPrice = biddingPrice;
+	}
+	public Label getDuration() {
+		return Duration;
+	}
+	public void setDuration(Label duration) {
+		Duration = duration;
+	}
 	private boolean messageSent = false;
 	
 	public boolean isMessageSent() {
@@ -85,28 +104,38 @@ public class ItemController implements Initializable{
 		BuyButton.setOnAction(new EventHandler<ActionEvent>() { // what to do when butt is pressed
 			@Override
 			public void handle(ActionEvent event) {
-				//buy 0 item 5000
-				messageSent = true;
+				//notify the client that button is pressed
+				if(!(ItemDescription.getText().equals("sold"))){
+					messageSent = true;
+				}
+				else {
+					BuyButton.setDisable(true);
+					Message.setText("sold");
+				}
 			}
 		});
 		
 	}
 	
+	
 	public void process(String[] msg) {
-		//buy fail low index item price CustomerName
-		//buy fail sold
-		//buy success index item price
-		//buy complete
+		//check message sent from clienthandler and set the GUI accordingly
+		Platform.runLater(()->{
+	
 		if(msg[1].equals("success")) {
-			Message.setText("join bidding");
+			if(msg[0].equals("buy")) {
+				Message.setText("join bidding");
+			}
 			ItemPrice.setText(msg[5]);
 		}
 		else if(msg[1].equals("complete")) {
-			Message.setText("Congradulations");
-			ItemName.setText(msg[6]);
+			if(msg[0].equals("buy")) {
+				Message.setText("Congradulations");
+			}
+			ItemName.setText("Bought by "+msg[2]);
 			ItemDescription.setText("sold");
 			ItemPrice.setText(msg[5]);
-			BuyButton.setDisable(false);
+			BuyButton.setDisable(true);
 		}
 		else if(msg[2].equals("low")){
 			Message.setText("Bid again with more money!");
@@ -114,7 +143,11 @@ public class ItemController implements Initializable{
 		else if(msg[2].equals("sold")){
 			Message.setText("Already sold, please bid another item");
 		}
+		}
+	
+		);
 	}
+	
 	public Label getIndex() {
 		return Index;
 	}

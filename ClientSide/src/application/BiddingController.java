@@ -1,18 +1,21 @@
 package application;
 
-import java.awt.Dimension;
-import java.awt.TextArea;
-import java.awt.TextField;
-import java.awt.Toolkit;
+
 import java.io.IOException;
+import javafx.scene.control.*;
 import java.net.URL;
+import java.sql.*;
 import java.util.concurrent.TimeUnit;
 
-import FinalP.FileInformation;
-import FinalP.Item;
+import NecessaryClass.FileInformation;
+import NecessaryClass.Item;
+
+//import FinalP.FileInformation;
+//import FinalP.Item;
 
 import java.util.*;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -38,141 +41,210 @@ public class BiddingController implements Initializable{
 	
 	@FXML
 	private VBox vBox;
-	//FileInformation f;
+	
+	@FXML 
+	private Button quit;
+	
+	@FXML
+	private Button history;
+	
+	@FXML
+	private TextField searchField;
+	
+	@FXML
+	private Label result;
+	
+	@FXML
+	private Button searchButton;
 	
 	public void initialize(URL location, ResourceBundle resources) {
 		// TODO Auto-generated method stub
-		
-		
-		//scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-		
-		
-		
-	}
-	
-	
-	
-	/*public static void setBiddingController(FileInformation f) {
-		this.f = f;
-	}*/
-	
-	public void showPage(FileInformation f,List<ItemController> items) {
-		try {
-			/*Stage primaryStage = new Stage();
-			//Pane root = FXMLLoader.load(getClass().getResource("Item.fxml"));	
-			Pane newLoadedPane = FXMLLoader.load(getClass().getResource("Item.fxml"));
-			//vBox.getChildren().add(newLoadedPane);
-			//Parent root = ScrollPane;
-			//VBox tested = new VBox();
-			BorderPane root = (BorderPane)FXMLLoader.load(getClass().getResource("BiddingPage.fxml"));
-			VBox v = new VBox();
-			v.getChildren().add(newLoadedPane);
-			Pane n = FXMLLoader.load(getClass().getResource("Item.fxml"));
-			v.getChildren().add(n);
-			Scene scene = new Scene(v,600,400);			
-			primaryStage.setScene(scene);
-			primaryStage.show();*/
-			System.out.println("show scene");
-			Map<Item,Double> temp= f.getItem();
-			//Pane root = FXMLLoader.load(getClass().getResource("Item.fxml"));
-			int j = 0;
-			VBox v = new VBox();
-			for(Map.Entry<Item,Double> entry : temp.entrySet()) {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("Item.fxml"));
-			loader.load();
-			ItemController it = loader.getController();
-			it.getIndex().setText(String.valueOf(j));
-			it.getItemName().setText(entry.getKey().getName());
-			it.getItemDescription().setText(entry.getKey().getDescription());
-			it.getItemPrice().setText(String.valueOf(entry.getValue()));
-			Pane newLoadedPane = loader.getRoot();
-			v.getChildren().add(newLoadedPane);
-			items.add(it);
-			j++;
+		quit.setOnAction(new EventHandler<ActionEvent>() { 
+			// quit the page
+			@Override
+			public void handle(ActionEvent event) {
+				Platform.exit();
+				System.exit(0);
 			}
+		});
+		
+		searchButton.setOnAction(new EventHandler<ActionEvent>() { 
+			// search through the database to find the indexes of the item
+			@Override
+			public void handle(ActionEvent event) {
+				try {
+					Connection C = DriverManager.getConnection("jdbc:mysql://localhost:3306/database","root", "WJj25127358");
+					PreparedStatement check = C.prepareStatement("SELECT * FROM items WHERE Name = ?");
+					  check.setString(1, searchField.getText());
+					  ResultSet resultSet = check.executeQuery();
+					  System.out.println(searchField.getText());
+					  TimeUnit t = TimeUnit.SECONDS;
+					  String s = "Not Exist";
+					  if(resultSet.isBeforeFirst()) {
+						  //item in the database
+						  while(resultSet.next()) {
+							 //read current price and highest price from database
+							 s = resultSet.getString("ItemID");
+							 
+						  }
+						result.setText("item at "+s);
+					  }
+					  else {
+						  result.setText("item at "+s);
+					  }
+					 
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					//return;
+				}
+			}
+		});
+		
+		history.setOnAction(new EventHandler<ActionEvent>() { 
+			// search through the database and show a new page detail the bidding history
+			@Override
+			public void handle(ActionEvent event) {
+				
+					 Platform.runLater(()->{
+						 try {
+					Connection C = DriverManager.getConnection("jdbc:mysql://localhost:3306/database","root", "WJj25127358");
+					String msg = "";
+					      String query = "SELECT * FROM history";
+
+					     
+					      Statement st = C.createStatement();
+					      
+					      
+					      ResultSet rs = st.executeQuery(query);
+					      
+					     
+					      VBox p = new VBox();
+					      ScrollPane s = new ScrollPane();
+					      s.setContent(p);
+					      
+					      Stage stage2 = new Stage();
+					      stage2.setTitle("History");
+					      Scene scene = new Scene(s,600,400);
+					      stage2.setScene(scene);
+					      while (rs.next())
+					      {
+					    	  System.out.println(msg);
+					        msg = rs.getString("customer")+" buy "+rs.getString("item")+ " for "+rs.getString("price");
+					        Text t = new Text(msg);
+					        p.getChildren().add(t);
+					      }
+					      st.close();
+					      //System.out.println(msg);
+					      
+			
+					      
+					      
+					      
+					      stage2.show();
+						 }
+					      catch (SQLException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} 
+					 });
+			}
+		});
+	}
+					    
+				
+				   
+					
+				
+			
+
+		
+
+		
+		
+		
+	
+	
+	
+	
+	
+	
+	public void showPage(Connection c,List<ItemController> items,String customer) {
+		try {
+			//add all item to a vBox and adds them to the scrollpane
+			System.out.println("show scene");
+			FXMLLoader bidloader = new FXMLLoader(getClass().getResource("BiddingPage.fxml"));
+			bidloader.load();
+			BiddingController bidController = bidloader.getController();
+			VBox v = new VBox();
+			
+			
+			int j = 1;
+			for(j=1;j<=9;j++) {
+			PreparedStatement pst = c.prepareStatement("select Name, Description, CurrentPrice, LimitPrice, Duration from items where ItemID = ?");
+			pst.setString(1, String.valueOf(j));
+			ResultSet rs = pst.executeQuery();
+			if(rs.next()==true) {
+				FXMLLoader loader = new FXMLLoader(getClass().getResource("Item.fxml"));
+				loader.load();
+				ItemController it = loader.getController();
+				it.getIndex().setText(String.valueOf(j));
+				it.getItemName().setText(rs.getString(1));
+				it.getItemDescription().setText(rs.getString(2));
+				it.getItemPrice().setText(rs.getString(3));
+				it.getBiddingPrice().setText(rs.getString(4));
+				it.getDuration().setText(rs.getString(5));
+				Pane newLoadedPane = loader.getRoot();					
+				v.getChildren().add(newLoadedPane);
+				items.add(it);
+				
+			}
+			}
+			
+			
+			
+			
+			bidController.getScrollPane().setContent(v);
+			
 			Stage biddingStage = new Stage();
-			//FXMLLoader loader = new FXMLLoader(getClass().getResource("BiddingPage.fxml"));
-			Scene scene = new Scene(v,600,400);			
+			Pane root = bidloader.getRoot();
+			Scene scene = new Scene(root,600,400);
+			biddingStage.setTitle("welcome to Bidding "+customer);
 			biddingStage.setScene(scene);
 			biddingStage.show();
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			//e.printStackTrace();\
-			System.out.println("method");
+			e.printStackTrace();
 		}
 	}
-	
-	
-	
-	
-	/*private static Map<Item,Double> s = new HashMap<Item,Double>();
-	private Item itemToUpdate = new Item(null,null);
-	private double price;
-	
-	public BiddingController (FileInformation f) {
-		s = f.getItem();
-	}
-	
-	public void addGUI(GridPane grid,Client c) {
-		int j = 1;			
-		for(Map.Entry<Item,Double> entry : s.entrySet()) {
-			grid.add(new Text("Description:\n "+entry.getKey().getDescription()), 0, j);
-			grid.add(new Text("CurrentPrice: "+entry.getValue()), 1, j);
-			Button product = new Button("Buy "+entry.getKey().getName());
-			j++;
-			grid.add(product,1, j);
-			PasswordField p = new PasswordField();
-			grid.add(p, 0, j);
-			Item temp = new Item(entry.getKey().getName(),entry.getKey().getDescription());
-			try {
-				product.setOnAction(new EventHandler<ActionEvent>() { // what to do when butt is pressed
-					@Override
-					public void handle(ActionEvent event) {
-						String price = p.getText();
-						p.clear();
-						String temp[] = product.getText().split(" ");
-						String toWrite = temp[1];
-						c.sendToServer(toWrite+" "+price);
-					}
-				});
-			}
-			catch(Exception e) {
-				System.out.println("Please enter a valid number");
-			}
-			
-			
-			j++;
-		}
-	}
-	
 
-	public void receiveMessage(String info, String object, GridPane grid) {
-		try {
-		synchronized(grid) {
-		if(info.equals("low")) {
-			Text temp = new Text("Not High Enough");
-			grid.add(temp, 0, 0);
-			TimeUnit.SECONDS.sleep(5);			
-			grid.getChildren().remove(temp);
-		}
-		else if(info.equals("sold")) {
-			Text temp = new Text("Object sold");
-			grid.add(temp, 0, 0);
-			TimeUnit.SECONDS.sleep(5);
-			grid.getChildren().remove(temp);
-		}
-		else {
-			Text temp = new Text("Congradulations");
-			grid.add(temp, 0, 0);
-			
-		}
-		}
+
+
+	public ScrollPane getScrollPane() {
+		return ScrollPane;
 	}
-		catch (Exception e){
-			
-		}
-}*/
+
+
+
+	public void setScrollPane(ScrollPane scrollPane) {
+		ScrollPane = scrollPane;
+	}
+
+
+
+	public VBox getvBox() {
+		return vBox;
+	}
+
+
+
+	public void setvBox(VBox vBox) {
+		this.vBox = vBox;
+	}
+	
+	
+	
 	
 	
 }

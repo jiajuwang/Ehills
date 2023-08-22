@@ -12,15 +12,15 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import com.google.gson.Gson;
 
-class Server extends Observable {
 
-  public static void main(String[] args) {
+public class Server extends Observable {
+
+  /*public static void main(String[] args) {
     new Server().runServer();
-  }
+  }*/
 
-  private void runServer() {
+  public void runServer() {
     try {
       setUpNetworking();
     } catch (Exception e) {
@@ -28,8 +28,12 @@ class Server extends Observable {
       return;
     }
   }
+  
+  public Server() {
+	  
+  }
 
-  private void setUpNetworking() throws Exception {
+  public void setUpNetworking() throws Exception {
     @SuppressWarnings("resource")
     ServerSocket serverSock = new ServerSocket(4242);
     while (true) {
@@ -45,33 +49,11 @@ class Server extends Observable {
     }
   }
 
-  protected void processRequest(String input) {
-    String output = "Error";
-    Gson gson = new Gson();
-    MessageS message = gson.fromJson(input, MessageS.class);
-    try {
-      String temp = "";
-      switch (message.type) {
-        case "upper":
-          temp = message.input.toUpperCase();
-          break;
-        case "lower":
-          temp = message.input.toLowerCase();
-          break;
-        case "strip":
-          temp = message.input.replace(" ", "");
-          break;
-      }
-      output = "";
-      for (int i = 0; i < message.number; i++) {
-        output += temp;
-        output += " ";
-      }
+  public void processRequest(String input) {
+	  
       this.setChanged();
-      this.notifyObservers(output);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+      this.notifyObservers(input);
+    
   }
   
   

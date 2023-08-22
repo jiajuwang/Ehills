@@ -17,9 +17,11 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.sql.Connection;
+import java.sql.DriverManager;
 
-import FinalP.FileInformation;
-import FinalP.Item; 
+//import FinalP.FileInformation;
+//import FinalP.Item; 
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -34,17 +36,16 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
+import NecessaryClass.FileInformation;
 //import FinalP.FileInformation;
 import javafx.scene.layout.VBox;
 
-class Client {
+public class Client {
 
-	  private static String host = "localhost";
-	  private static Set<Client> clients = new HashSet<Client>();
-	  private BufferedReader fromServer;
+	  private static String host = "127.0.0.1";
+	  //private static Set<Client> clients = new HashSet<Client>();
+	  //private BufferedReader fromServer;
 	  private BufferedWriter toServer;
 	  //private Scanner consoleInput = new Scanner(System.in);
 	  private ObjectInputStream objectInputStream;
@@ -52,24 +53,19 @@ class Client {
 	  private Socket socket;
 	  private LoginController login;
 	  private List<ItemController> items = new ArrayList<ItemController>();
-	  private FileInformation toPass;
+	  //private FileInformation toPass;
 	  private String CustomerName;
 	  private static Object lock = new Object();
+	  private Connection C;
+	  private Stage primaryStage;
 
-	 /* public static void main(String[] args) {
-	    try {
-	      new Client().setUpNetworking();
-	    } catch (Exception e) {
-	      e.printStackTrace();
-	    }
-	  }*/
 
-	  void setUpNetworking() throws Exception {
-	    //@SuppressWarnings("resource")
+
+	  public void setUpNetworking() throws Exception {
+	    //connects the server and show the login page
 	    this.socket = new Socket(host, 4242);
 	    System.out.println("Connecting to... " + socket);
-	    //FXMLLoader loader = new FXMLLoader(getClass().getResource("LoginPage.fxml"));
-	    //login = loader.getController();
+
 	    toServer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 	    objectInputStream = new ObjectInputStream(socket.getInputStream());
 	    
@@ -80,7 +76,7 @@ class Client {
         login = loader.getController();
         BorderPane root = loader.getRoot();
         Scene scene = new Scene(root,600,400);
-        Stage primaryStage = new Stage();
+        primaryStage = new Stage();
         primaryStage.setScene(scene);
         primaryStage.show();
 	    	}
@@ -88,7 +84,7 @@ class Client {
 	    		e.printStackTrace();
 	    	}
 	    });
-        
+	  
 	    
             	
 	    
@@ -106,13 +102,14 @@ class Client {
 	
 	
 	  Thread read =  new Thread(new Runnable() {
+		  //read messages from clienthandler
 	      @Override
 	      public void run() {
 	    	  System.out.println("read");
-	      	   
+	    	  
 	    	try {	
 	    		 
-		      	 
+	    	  C = DriverManager.getConnection("jdbc:mysql://localhost:3306/database","root", "WJj25127358"); 
 	          while(socket.isConnected()) {
 
 	        	  Object input = objectInputStream.readObject();
@@ -121,10 +118,8 @@ class Client {
 	        		  continue;
 	        	  }
 	        	  if(input instanceof FileInformation) {
-	        		  //pass in biddingitems
-	        		  //System.out.println("found");
-	        		  toPass = (FileInformation)input;
-	        		  System.out.println("file passed");
+	        		 // toPass = (FileInformation)input;
+	        		 // System.out.println("file passed");
 	        	  }
 	        	  else {
 	        		  
@@ -136,11 +131,15 @@ class Client {
 	        			  //buy 0 success 
 	        			  String[] temp = ((String)input).split(" ");
 	        			  if(temp[0].equals("login")) {
-	        				  login.process(temp,toPass,items);
+	        				  CustomerName = temp[2];
+	        				  login.process(primaryStage,temp,C,items);
 	        			  }
-	        			  else if(temp[0].equals("buy")) {
+	        			  else  {
+	        				  synchronized(lock) {
 	        				  Integer index = Integer.parseInt(temp[3]);
+	        				  index--;
 	        				  items.get(index).process(temp);
+	        				  }
 	        			  }
 	        			  }
 	        			  input = objectInputStream.readObject();
@@ -158,6 +157,7 @@ class Client {
 	  	
 	  
 	  Thread write = new Thread(new Runnable() {
+		  //check if any button is pressed, send the message
 		  @Override
 		  public void run() {
 			  System.out.println("write");
@@ -172,13 +172,13 @@ class Client {
 				  if(login.isMessageSent()) {
 					 
 					 System.out.println("username sent");
-					 toServer.write(login.writeMessage()+" "+CustomerName);
+					 toServer.write(login.writeMessage());
 					 login.setMessageSent(false);
 					 toServer.newLine();
 					 toServer.flush();
 					 
 				  }
-				  else {
+				  else{
 					  synchronized(lock) {
 					  for(int i =0;i<items.size();i++) {
 						  if(items.get(i)!=null) {
@@ -195,15 +195,6 @@ class Client {
 				  }
 					  
 					  
-					 /* 
-					  toServer.write("login user pass");
-						 toServer.newLine();
-						 
-						 toServer.flush();
-						 toServer.write("login user 1234");
-						 toServer.newLine();
-						 
-						 toServer.flush();*/
 				  }
 				  
 		  
